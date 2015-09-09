@@ -19,8 +19,8 @@ class Command
     @search @query(), (error, result) =>
       throw error if error?
 
-      deployments = @process @normalize result
-      async.each deployments, @update, (error) =>
+      connectors = @process @normalize result
+      async.each connectors, @update, (error) =>
         throw error if error?
         process.exit 0
 
@@ -38,14 +38,13 @@ class Command
 
     return query
 
-  update: (deployment, callback) =>
+  update: (connector, callback) =>
     uri = url.format
       protocol: 'http'
       host: @destinationElasticsearchUrl
-      pathname: "/gateblu_device_add_history/event/#{deployment.deploymentUuid}"
+      pathname: "/gateblu_device_add_history/event/#{connector}"
 
-
-    request.put uri, json: deployment, (error, response, body) =>
+    request.put uri, json: connector, (error, response, body) =>
       return callback error if error?
       return callback new Error(JSON.stringify body) if response.statusCode >= 300
       callback null
@@ -59,18 +58,18 @@ class Command
     }, callback)
 
   normalize: (result) =>
-    buckets = result.aggregations.addGatebluDevice.group_by_deploymentUuid.buckets
+    buckets = result.aggregations.addGatebluDevice.group_by_connector.buckets
     _.map buckets, (bucket) =>
       {
-        deploymentUuid: bucket.key
+        connector: bucket.key
         beginTime: bucket.beginRecord.beginTime.value
         endTime:   bucket.endRecord.endTime.value
-        workflow: 'add-device'
+        workflow: 'device-add-to-gateblu'
       }
 
-  process: (deployments) =>
-    _.map deployments, (deployment) =>
-      {workflow, deploymentUuid, beginTime, endTime} = deployment
+  process: (connectors) =>
+    _.map connectors, (connector) =>
+      {workflow, connector, beginTime, endTime} = connector
 
       formattedBeginTime = null
       formattedBeginTime = moment(beginTime).toISOString() if beginTime?
@@ -81,7 +80,7 @@ class Command
       elapsedTime = endTime - beginTime if beginTime? && endTime?
 
       {
-        deploymentUuid: deploymentUuid
+        connector: connector
         workflow: workflow
         beginTime: formattedBeginTime
         endTime: formattedEndTime

@@ -4,7 +4,7 @@
       "filter": {
         "and": [{
           "term": {
-            "payload.workflow.raw": "add-device"
+            "payload.workflow.raw": "device-add-to-gateblu"
           }
         }]
       },
@@ -19,7 +19,7 @@
               "filter": {
                 "and": [{
                   "term": {
-                    "payload.application.raw": "gateblu-forever"
+                    "payload.application.raw": "app-octoblu"
                   }
                 }, {
                   "term": {
@@ -39,7 +39,7 @@
               "filter": {
                 "and": [{
                   "term": {
-                    "payload.application.raw": "gateblu-forever"
+                    "payload.application.raw": "app-octoblu"
                   }
                 }, {
                   "term": {
