@@ -1,0 +1,63 @@
+{
+  "aggs": {
+    "addGatebluDevice": {
+      "filter": {
+        "and": [{
+          "term": {
+            "payload.workflow.raw": "add-device"
+          }
+        }]
+      },
+      "aggs": {
+        "group_by_connector": {
+          "terms": {
+            "field": "payload.connector.raw",
+            "size": 0
+          },
+          "aggs": {
+            "beginRecord": {
+              "filter": {
+                "and": [{
+                  "term": {
+                    "payload.application.raw": "gateblu-forever"
+                  }
+                }, {
+                  "term": {
+                    "payload.state.raw": "begin"
+                  }
+                }]
+              },
+              "aggs": {
+                "beginTime": {
+                  "min": {
+                    "field": "_timestamp"
+                  }
+                }
+              }
+            },
+            "endRecord": {
+              "filter": {
+                "and": [{
+                  "term": {
+                    "payload.application.raw": "gateblu-forever"
+                  }
+                }, {
+                  "term": {
+                    "payload.state.raw": "end"
+                  }
+                }]
+              },
+              "aggs": {
+                "endTime": {
+                  "min": {
+                    "field": "_timestamp"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
