@@ -22,6 +22,7 @@ class Command
       connectors = @process @normalize result
       async.each connectors, @update, (error) =>
         throw error if error?
+        console.log "it's done...maybe?"
         process.exit 0
 
   query: =>
