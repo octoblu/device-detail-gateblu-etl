@@ -19,7 +19,7 @@ class Command
     @search @query(), (error, result) =>
       throw error if error?
 
-      connectors = @process @normalize result
+      connectors = @normalize result
       async.each connectors, @update, (error) =>
         throw error if error?
         console.log "it's done...maybe?"
@@ -46,7 +46,7 @@ class Command
       pathname: "/gateblu_device_add_history/event/#{connector.connector}"
 
     console.log "updating with connector...", connector
-    
+
     request.put uri, json: connector, (error, response, body) =>
       return callback error if error?
       return callback new Error(JSON.stringify body) if response.statusCode >= 300
@@ -63,33 +63,11 @@ class Command
   normalize: (result) =>
     buckets = result.aggregations.addGatebluDevice.group_by_connector.buckets
     _.map buckets, (bucket) =>
-      {
-        connector: bucket.key
-        beginTime: bucket.beginRecord.beginTime.value
-        endTime:   bucket.endRecord.endTime.value
-        workflow: 'device-add-to-gateblu'
-      }
-
-  process: (connectors) =>
-    _.map connectors, (connector) =>
-      {workflow, connector, beginTime, endTime} = connector
-
-      formattedBeginTime = null
-      formattedBeginTime = moment(beginTime).toISOString() if beginTime?
-      formattedEndTime = null
-      formattedEndTime = moment(endTime).toISOString() if endTime?
-
-      elapsedTime = null
-      elapsedTime = endTime - beginTime if beginTime? && endTime?
-
-      {
-        connector: connector
-        workflow: workflow
-        beginTime: formattedBeginTime
-        endTime: formattedEndTime
-        elapsedTime: elapsedTime
-        success: endTime?
-      }
+      connector: bucket.key
+      workflow: 'device-add-to-gateblu'
+      total: bucket.beginRecord.doc_count
+      successes: bucket.endRecord.doc_count
+      failures: bucket.beginRecord.doc_count - bucket.endRecord.doc_count
 
 command = new Command()
 command.run()
