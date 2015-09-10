@@ -42,7 +42,7 @@ class Command
     uri = url.format
       protocol: 'http'
       host: @destinationElasticsearchUrl
-      pathname: "/gateblu_device_add_history/event/#{connector}"
+      pathname: "/gateblu_device_add_history/event/#{connector.connector}"
 
     request.put uri, json: connector, (error, response, body) =>
       return callback error if error?
