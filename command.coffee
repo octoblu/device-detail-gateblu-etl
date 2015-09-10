@@ -43,7 +43,7 @@ class Command
     uri = url.format
       protocol: 'http'
       host: @destinationElasticsearchUrl
-      pathname: "/gateblu_device_add_history/event/#{connector.connector}"
+      pathname: "/gateblu_device_detail_history/event/#{connector.connector}"
 
     console.log "updating with connector...", connector
 
