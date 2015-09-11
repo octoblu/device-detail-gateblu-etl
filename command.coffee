@@ -45,8 +45,6 @@ class Command
       host: @destinationElasticsearchUrl
       pathname: "/gateblu_device_detail_history/event/#{connector.connector}"
 
-    console.log "updating with connector...", connector
-
     request.put uri, json: connector, (error, response, body) =>
       return callback error if error?
       return callback new Error(JSON.stringify body) if response.statusCode >= 300
