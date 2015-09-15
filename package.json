@@ -1,6 +1,6 @@
 {
   "name": "device-detail-gateblu-etl",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "ETL for gateblu device detail metrics",
   "main": "index.js",
   "scripts": {

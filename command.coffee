@@ -62,7 +62,7 @@ class Command
     buckets = result.aggregations.addGatebluDevice.group_by_gatebluUuid.buckets
     data = []
     _.each buckets, (bucket) =>
-      _.each bucket.group_by_connector, (connectorBucket) =>
+      _.each bucket.group_by_connector.buckets, (connectorBucket) =>
         data.push
           connector: connectorBucket.key
           workflow: 'device-add-to-gateblu'
