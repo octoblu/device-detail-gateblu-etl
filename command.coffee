@@ -59,13 +59,17 @@ class Command
     }, callback)
 
   normalize: (result) =>
-    buckets = result.aggregations.addGatebluDevice.group_by_connector.buckets
-    _.map buckets, (bucket) =>
-      connector: bucket.key
-      workflow: 'device-add-to-gateblu'
-      total: bucket.beginRecord.doc_count
-      successes: bucket.endRecord.doc_count
-      failures: bucket.beginRecord.doc_count - bucket.endRecord.doc_count
+    buckets = result.aggregations.addGatebluDevice.group_by_gatebluUuid.buckets
+    data = []
+    _.each buckets, (bucket) =>
+      _.each bucket.group_by_connector, (connectorBucket) =>
+        data.push
+          connector: connectorBucket.key
+          workflow: 'device-add-to-gateblu'
+          total: connectorBucket.beginRecord.doc_count
+          successes: connectorBucket.endRecord.doc_count
+          failures: connectorBucket.beginRecord.doc_count - connectorBucket.endRecord.doc_count
+    return data
 
 command = new Command()
 command.run()
